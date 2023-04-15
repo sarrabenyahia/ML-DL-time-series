@@ -6,6 +6,7 @@ import statsmodels.api as sm
 import numpy as np
 import pandas as pd
 import ruptures as rpt
+import seaborn as sns
 
 
 class VizualizationTS:
@@ -15,29 +16,31 @@ class VizualizationTS:
         self.target = target
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
 
-    def plot_line_series(self, cols):
+    def visualize_time_series(self, cols):
         """
-        Create subplots for each  time series.
+        Create subplots for each time series.
 
         Args:
-            self : DataFrame containing the  time series.
+            self : DataFrame containing the time series.
             cols: List of column names to plot.
 
         Returns : 
             Plots representing the evolution of each time series.
         """
-        for i, col in enumerate(cols):
-            fig = go.Figure()
-            fig.add_trace(go.Line(x=self.df.index, y=self.df[col], mode='lines', line_color=self.colors[i]))
-            fig.update_layout(title=f"Line Series of {col}",
-                              xaxis_title='Date',
-                              yaxis_title='Percent Change',
-                              template='plotly_white')
-            fig.show()
+        df_to_plot = self.df[cols]
+        default_colors = sns.color_palette('bright', len(cols))
+        fig, axs = plt.subplots(df_to_plot.shape[1], sharex=True, figsize=(10, 10))
+        for i, col in enumerate(df_to_plot.columns):
+            sns.lineplot(x=self.df.index, y=df_to_plot[col], ax=axs[i], color=default_colors[i])
+            axs[i].set_ylabel(col)
+        plt.xlabel('Time')
+        plt.show()
+
+
 
     def plot_acf_pacf(self, cols):
         """
-       Graphique des ACF et PACF des différentes séries.
+        Graphique des ACF et PACF des différentes séries.
 
         Args:
             cols (list): Liste des noms des colonnes à utiliser pour l'ACF and PACF .
@@ -48,9 +51,13 @@ class VizualizationTS:
         for col in cols:
             print(f"ACF and PACF of the series {col}:")
             ts = self.df[col]
-            tsaplots.plot_acf(ts, lags=10)
-            tsaplots.plot_pacf(ts, lags=10)
+            fig, axs = plt.subplots(2, sharex=True, figsize=(10, 6))
+            tsaplots.plot_acf(ts, lags=10, ax=axs[0])
+            axs[0].set_title(f"ACF of {col}")
+            tsaplots.plot_pacf(ts, lags=10, ax=axs[1])
+            axs[1].set_title(f"PACF of {col}")
             plt.show()
+
 
     def plot_target(self):
         """
