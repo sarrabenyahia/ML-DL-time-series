@@ -8,7 +8,7 @@ import pandas as pd
 import ruptures as rpt
 
 
-class AnalyzerTS:
+class VizualizationTS:
 
     def __init__(self, df:pd.DataFrame, target:str):
         self.df = df
@@ -189,6 +189,7 @@ class StationarityTest:
                 results[col] = False
 
         return results
+
 
 
 class BreakPointsDetection:
