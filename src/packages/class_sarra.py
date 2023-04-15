@@ -1,9 +1,13 @@
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import numpy as np
 from statsmodels.graphics.gofplots import ProbPlot
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+
+#! TODO : Class for Stationnarity test 
 
 
 class GeneralPresentator:
@@ -90,32 +94,13 @@ class DataPlotter:
         ax.set(title=f'Distribution of {column}',
                xlabel=column, ylabel='Density')
 
-    def plot_acf_pacf(self, column):
-        """
-        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
-        
-        Parameters:
-        column (str): The name of the column to plot
-        """
-        plt.figure(figsize=(15,5))
-        plot_acf(self.df[column], lags=30, alpha=0.05)
-        plt.title(f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
-        
-        plt.figure(figsize=(15,5))
-        plot_pacf(self.df[column], lags=30, alpha=0.05)
-        plt.title(f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
 
-import pandas as pd
-import numpy as np
+
 
 class DataExplorer:
-    
     def __init__(self, df):
         self.df = df
 
-    
     def print_correlation_matrix(self):
         """
         Prints the correlation matrix of the numerical columns in the DataFrame
@@ -124,7 +109,7 @@ class DataExplorer:
         print("Correlation Matrix:")
         display(corr_matrix)
         print()
-    
+
     def plot_correlation_heatmap(self):
         """
         Plots a heatmap of the correlation matrix of the numerical columns in the DataFrame
@@ -133,5 +118,22 @@ class DataExplorer:
         sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
         plt.title("Correlation Heatmap")
         plt.show()
+        
+    def plot_acf_pacf(self, column):
+        """
+        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
 
-    
+        Parameters:
+        column (str): The name of the column to plot
+        """
+        plt.figure(figsize=(15, 5))
+        plot_acf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
+
+        plt.figure(figsize=(15, 5))
+        plot_pacf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
