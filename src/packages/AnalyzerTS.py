@@ -28,7 +28,7 @@ class VizualizationTS:
         """
         for i, col in enumerate(cols):
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=self.df.index, y=self.df[col], mode='lines', line_color=self.colors[i]))
+            fig.add_trace(go.Line(x=self.df.index, y=self.df[col], mode='lines', line_color=self.colors[i]))
             fig.update_layout(title=f"Line Series of {col}",
                               xaxis_title='Date',
                               yaxis_title='Percent Change',
