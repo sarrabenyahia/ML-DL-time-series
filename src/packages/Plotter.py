@@ -199,6 +199,7 @@ class PatternAnalyzer:
         """
         Plots the time series of the given column for the specified granularity.
         """
+        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
         granularity_list = self._get_granularity_list(granularity)
 
         for df in granularity_list:
