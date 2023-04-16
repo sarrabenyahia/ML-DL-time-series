@@ -15,7 +15,7 @@ from ydata_profiling import ProfileReport
 class GeneralPresentator:
     def __init__(self, df):
         self.df = df
-        
+
     def print_basic_prez(self):
         self.print_column_names()
         self.print_data_types()
@@ -62,8 +62,7 @@ class GeneralPresentator:
         print()
 
 
-
-class BasicStats:
+class DataPlotter:
     """
     A class to analyze basic statistics and generate plots for a given DataFrame.
     """
@@ -135,7 +134,8 @@ class BasicStats:
 
         for df in granularity_list:
             plt.figure(figsize=(15, 5))
-            ax = sns.histplot(data=df[column], bins=50, kde=True, stat="density", alpha=0.6)
+            ax = sns.histplot(data=df[column], bins=50,
+                              kde=True, stat="density", alpha=0.6)
             mu, sigma = stats.norm.fit(df[column])
             xmin, xmax = plt.xlim()
             x = np.linspace(xmin, xmax, 100)
@@ -143,25 +143,6 @@ class BasicStats:
             sns.lineplot(x=x, y=p, color='black')
             ax.set(title=f'Distribution of {column}',
                    xlabel=column, ylabel='Density')
-            
-    def calendar_data(self, column):
-        """
-        Plots a calendar analysis for the given column from the given DataFrame
-        """
-        plt.figure(figsize=(10, 5))
-        sns.set_style('white')
-        calendar_pd = self.df[[column]].copy()
-        calendar_pd['weekday'] = calendar_pd.index.weekday
-        calendar_pd['weekday'] = calendar_pd['weekday'].apply(
-            lambda x: calendar.day_name[x])
-        calendar_pd['month'] = calendar_pd.index.month
-        calendar_pd['year'] = calendar_pd.index.year
-        for col in ['weekday', 'month', 'year']:
-            sns.countplot(data=calendar_pd, x=col)
-            plt.title(f'Countplot of {col} for {column}')
-            plt.xticks(rotation=45)
-            plt.show()
-
 
 
 class PatternAnalyzer:
@@ -177,12 +158,13 @@ class PatternAnalyzer:
         """
         Resamples the DataFrame into daily, weekly, monthly, and yearly groups.
         """
-        daily_avg_df =  self.df.groupby(self.df.index.day).mean()
+        daily_avg_df = self.df.groupby(self.df.index.day).mean()
         weekly_avg_df = self.df.groupby(self.df.index.week).mean()
         monthly_avg_df = self.df.groupby(self.df.index.month).mean()
         yearly_avg_df = self.df.groupby(self.df.index.year).mean()
 
-        self.averaged_dfs = [daily_avg_df, weekly_avg_df, monthly_avg_df, yearly_avg_df]
+        self.averaged_dfs = [daily_avg_df,
+                             weekly_avg_df, monthly_avg_df, yearly_avg_df]
 
     def _get_granularity_list(self, granularity):
         """
@@ -205,34 +187,6 @@ class PatternAnalyzer:
             plt.figure(figsize=(15, 5))
             ax = sns.lineplot(data=df[column])
             ax.set(ylabel=column)
-
-
-
-class CorrelationExplorer:
-    def __init__(self, df):
-        self.df = df
-
-    def print_correlation_matrix(self):
-        """
-        Prints the correlation matrix of the numerical columns in the DataFrame
-        """
-        corr_matrix = self.df.select_dtypes(include=[np.number]).corr()
-        print("Correlation Matrix:")
-        display(corr_matrix)
-        print()
-
-    def plot_correlation_heatmap(self):
-        """
-        Plots a heatmap of the correlation matrix of the numerical columns in the DataFrame
-        """
-        corr_matrix = self.df.select_dtypes(include=[np.number]).corr()
-        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-        plt.title("Correlation Heatmap")
-        plt.show()
-        
-    def feature_correlation(self):
-        ax = sns.pairplot(self.df, height = 2.5)
-
 
 
 class StationnarityTest:
