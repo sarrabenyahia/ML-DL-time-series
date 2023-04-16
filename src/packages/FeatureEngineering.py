@@ -37,3 +37,24 @@ def downcast(df):
             else:
                 df[cols[i]] = df[cols[i]].astype('category')
     return df  
+
+def lag_creation(df, lag, time="day"):
+    if isinstance(lag, int):
+        lag = [lag]
+    if time == "day":
+        lag_min = [l*60*24 for l in lag]
+    elif time == "hour":
+        lag_min = [l*60 for l in lag]
+    elif time == "minute":
+        lag_min = lag
+    else:
+        raise ValueError("Invalid time value. Please use 'day', 'hour' or 'minute.")
+    
+    new_cols = []
+    for col in df.columns:
+        for index, l in enumerate(lag_min):
+            new_col = df[col].shift(l)
+            new_col.name = f"{col}_lag{lag[index]}{time[0]}"
+            new_cols.append(new_col)
+
+    return pd.concat([df] + new_cols, axis=1)
