@@ -6,15 +6,16 @@ import numpy as np
 from statsmodels.graphics.gofplots import ProbPlot
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 import calendar
+from ydata_profiling import ProfileReport
 
 
-#! TODO : Class for Stationnarity test 
+#! TODO : Class for Stationnarity test
 
 
 class GeneralPresentator:
     def __init__(self, df):
         self.df = df
-
+        
     def print_basic_prez(self):
         self.print_column_names()
         self.print_data_types()
@@ -61,42 +62,88 @@ class GeneralPresentator:
         print()
 
 
-class DataPlotter:
+
+class BasicStats:
+    """
+    A class to analyze basic statistics and generate plots for a given DataFrame.
+    """
+
     def __init__(self, df):
+        """
+        Initializes the class with the given DataFrame and resamples it.
+        """
         self.df = df
+        self._resample()
 
-        
-    def plotTS(self, column):
+    def _resample(self):
         """
-        Plots the given column from the given DataFrame
+        Resamples the DataFrame into daily, weekly, monthly, and quarterly groups.
         """
-        plt.figure(figsize=(15, 5))
-        ax = sns.lineplot(data=self.df[column])
-        ax.set(title=f'{column} plot for {self.df.index.name}',
-               xlabel='Date' if 'date' in self.df.index.name.lower() else 'Week', ylabel=column)
+        daily_df = self.df.resample('D').sum()
+        weekly_df = self.df.resample('W').sum()
+        monthly_df = self.df.resample('M').sum()
+        quarter_df = self.df.resample('3M').sum()
 
-    def plot_prob(self, column):
-        """
-        Plots the probability plot for the given column from the given DataFrame
-        """
-        qq = ProbPlot(self.df[column]).qqplot(line='s')
+        self.resampled_dfs = [daily_df, weekly_df, monthly_df, quarter_df]
 
-    def plot_histogram(self, column):
+    def _get_granularity_list(self, granularity):
         """
-        Plots a histogram of the given column from the given DataFrame
+        Returns the list of DataFrames based on the granularity input.
         """
-        plt.figure(figsize=(15, 5))
-        ax = sns.histplot(
-            data=self.df[column], bins=50, kde=True, stat="density", alpha=0.6)
-        mu, sigma = stats.norm.fit(self.df[column])
-        xmin, xmax = plt.xlim()
-        x = np.linspace(xmin, xmax, 100)
-        p = stats.norm.pdf(x, mu, sigma)
-        sns.lineplot(x=x, y=p, color='black')
-        ax.set(title=f'Distribution of {column}',
-               xlabel=column, ylabel='Density')
-        
+        granularities = {'all': self.resampled_dfs,
+                         'D': [self.resampled_dfs[0]],
+                         'W': [self.resampled_dfs[1]],
+                         'M': [self.resampled_dfs[2]],
+                         '3M': [self.resampled_dfs[3]]}
+        return granularities[granularity]
 
+    def data_profiling(self, granularity='all'):
+        """
+        Generates a data profiling report for the specified granularity.
+        """
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            profile = ProfileReport(df, title="Profiling Report")
+            profile.to_widgets()
+
+    def plot_time_series(self, column, granularity='all'):
+        """
+        Plots the time series of the given column for the specified granularity.
+        """
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            plt.figure(figsize=(15, 5))
+            ax = sns.lineplot(data=df[column])
+            ax.set(ylabel=column)
+
+    def plot_prob(self, column, granularity='all'):
+        """
+        Plots the probability plot for the given column for the specified granularity.
+        """
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            ProbPlot(data=df[column]).qqplot(line='s')
+
+    def plot_histogram(self, column, granularity='all'):
+        """
+        Plots the histogram of the given column for the specified granularity.
+        """
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            plt.figure(figsize=(15, 5))
+            ax = sns.histplot(data=df[column], bins=50, kde=True, stat="density", alpha=0.6)
+            mu, sigma = stats.norm.fit(df[column])
+            xmin, xmax = plt.xlim()
+            x = np.linspace(xmin, xmax, 100)
+            p = stats.norm.pdf(x, mu, sigma)
+            sns.lineplot(x=x, y=p, color='black')
+            ax.set(title=f'Distribution of {column}',
+                   xlabel=column, ylabel='Density')
+            
     def calendar_data(self, column):
         """
         Plots a calendar analysis for the given column from the given DataFrame
@@ -105,7 +152,8 @@ class DataPlotter:
         sns.set_style('white')
         calendar_pd = self.df[[column]].copy()
         calendar_pd['weekday'] = calendar_pd.index.weekday
-        calendar_pd['weekday'] = calendar_pd['weekday'].apply(lambda x: calendar.day_name[x])
+        calendar_pd['weekday'] = calendar_pd['weekday'].apply(
+            lambda x: calendar.day_name[x])
         calendar_pd['month'] = calendar_pd.index.month
         calendar_pd['year'] = calendar_pd.index.year
         for col in ['weekday', 'month', 'year']:
@@ -116,28 +164,51 @@ class DataPlotter:
 
 
 
-    def plot_acf_pacf(self, column):
+class PatternAnalyzer:
+
+    def __init__(self, df):
         """
-        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
-
-        Parameters:
-        column (str): The name of the column to plot
+        Initializes the class with the given DataFrame and resamples it.
         """
-        plt.figure(figsize=(15, 5))
-        plot_acf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
+        self.df = df
+        self._average()
 
-        plt.figure(figsize=(15, 5))
-        plot_pacf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
-        
+    def _average(self):
+        """
+        Resamples the DataFrame into daily, weekly, monthly, and yearly groups.
+        """
+        daily_avg_df =  self.df.groupby(self.df.index.day).mean()
+        weekly_avg_df = self.df.groupby(self.df.index.week).mean()
+        monthly_avg_df = self.df.groupby(self.df.index.month).mean()
+        yearly_avg_df = self.df.groupby(self.df.index.year).mean()
+
+        self.averaged_dfs = [daily_avg_df, weekly_avg_df, monthly_avg_df, yearly_avg_df]
+
+    def _get_granularity_list(self, granularity):
+        """
+        Returns the list of DataFrames based on the granularity input.
+        """
+        granularities = {'all': self.averaged_dfs,
+                         'W': [self.averaged_dfs[0]],
+                         'W': [self.averaged_dfs[1]],
+                         'M': [self.averaged_dfs[2]],
+                         'Y': [self.averaged_dfs[3]]}
+        return granularities[granularity]
+
+    def plot_time_series(self, column, granularity='all'):
+        """
+        Plots the time series of the given column for the specified granularity.
+        """
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            plt.figure(figsize=(15, 5))
+            ax = sns.lineplot(data=df[column])
+            ax.set(ylabel=column)
 
 
-class DataExplorer:
+
+class CorrelationExplorer:
     def __init__(self, df):
         self.df = df
 
@@ -159,5 +230,30 @@ class DataExplorer:
         plt.title("Correlation Heatmap")
         plt.show()
         
+    def feature_correlation(self):
+        ax = sns.pairplot(self.df, height = 2.5)
 
-    
+
+
+class StationnarityTest:
+    def __init__(self, df):
+        self.df = df
+
+    def plot_acf_pacf(self, column):
+        """
+        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
+
+        Parameters:
+        column (str): The name of the column to plot
+        """
+        plt.figure(figsize=(15, 5))
+        plot_acf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
+
+        plt.figure(figsize=(15, 5))
+        plot_pacf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
