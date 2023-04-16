@@ -10,9 +10,6 @@ from ydata_profiling import ProfileReport
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 
-#! TODO : Class for Stationnarity test
-
-
 class GeneralPresentator:
     def __init__(self, df):
         self.df = df
