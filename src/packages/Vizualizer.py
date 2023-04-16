@@ -235,25 +235,3 @@ class PatternAnalyzer:
             plt.show()
 
 
-class StationnarityTest:
-    def __init__(self, df):
-        self.df = df
-
-    def plot_acf_pacf(self, column):
-        """
-        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
-
-        Parameters:
-        column (str): The name of the column to plot
-        """
-        plt.figure(figsize=(15, 5))
-        plot_acf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
-
-        plt.figure(figsize=(15, 5))
-        plot_pacf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
