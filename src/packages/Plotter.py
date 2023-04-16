@@ -132,8 +132,8 @@ class DataPlotter:
         Plots the histogram of the given column for the specified granularity.
         """
         granularity_list = self._get_granularity_list(granularity)
-
-        for df in granularity_list:
+        print(granularity_list)
+        for index, df in enumerate(granularity_list):
             plt.figure(figsize=(15, 5))
             ax = sns.histplot(data=df[column], bins=50,
                               kde=True, stat="density", alpha=0.6)
@@ -142,8 +142,7 @@ class DataPlotter:
             x = np.linspace(xmin, xmax, 100)
             p = stats.norm.pdf(x, mu, sigma)
             sns.lineplot(x=x, y=p, color='black')
-            ax.set(title=f'Distribution of {column}',
-                   xlabel=column, ylabel='Density')
+            ax.set(title=f'{} distribution of {column}', xlabel=column, ylabel='Density')
 
 
 class PatternAnalyzer:
