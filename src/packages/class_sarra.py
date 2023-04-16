@@ -7,6 +7,7 @@ from statsmodels.graphics.gofplots import ProbPlot
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 import calendar
 from ydata_profiling import ProfileReport
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 
 #! TODO : Class for Stationnarity test
@@ -187,6 +188,26 @@ class PatternAnalyzer:
             plt.figure(figsize=(15, 5))
             ax = sns.lineplot(data=df[column])
             ax.set(ylabel=column)
+
+    def seasonal_decompositation_additive(self, column, granularity="all"):
+
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            result = seasonal_decompose(
+                df[column], model='additive', period=1)
+            result.plot()
+            plt.show()
+            
+    def seasonal_decompositation_multiplicative(self, column, granularity="all"):
+
+        granularity_list = self._get_granularity_list(granularity)
+
+        for df in granularity_list:
+            result = seasonal_decompose(
+                df[column], model='multiplicative', period=1)
+            result.plot()
+            plt.show()
 
 
 class StationnarityTest:
