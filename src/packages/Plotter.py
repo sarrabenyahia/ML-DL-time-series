@@ -204,7 +204,17 @@ class PatternAnalyzer:
         for df in granularity_list:
             plt.figure(figsize=(15, 5))
             ax = sns.lineplot(data=df[column])
-            ax.set(ylabel=column)
+            if granularity == "all":
+                ax.set(title=f'{granularity_text[index]} values for {column}', ylabel="Watts/hour")
+            elif granularity == "D":
+                ax.set(title=f'Daily values for {column}', ylabel="Watts/hour")
+            elif granularity == "W":
+                ax.set(title=f'Weekly values for {column}', ylabel="Watts/hour")
+            elif granularity == "M":
+                ax.set(title=f'Monthly values for {column}', ylabel="Watts/hour")
+            elif granularity == "3M":
+                ax.set(title=f'Quarterly values for {column}', ylabel="Watts/hour")
+
 
     def seasonal_decompositation_additive(self, column, granularity="all"):
 
