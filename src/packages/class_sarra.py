@@ -5,6 +5,7 @@ import scipy.stats as stats
 import numpy as np
 from statsmodels.graphics.gofplots import ProbPlot
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+import calendar
 
 
 #! TODO : Class for Stationnarity test 
@@ -64,6 +65,7 @@ class DataPlotter:
     def __init__(self, df):
         self.df = df
 
+        
     def plotTS(self, column):
         """
         Plots the given column from the given DataFrame
@@ -93,8 +95,46 @@ class DataPlotter:
         sns.lineplot(x=x, y=p, color='black')
         ax.set(title=f'Distribution of {column}',
                xlabel=column, ylabel='Density')
+        
+
+    def calendar_data(self, column):
+        """
+        Plots a calendar analysis for the given column from the given DataFrame
+        """
+        plt.figure(figsize=(10, 5))
+        sns.set_style('white')
+        calendar_pd = self.df[[column]].copy()
+        calendar_pd['weekday'] = calendar_pd.index.weekday
+        calendar_pd['weekday'] = calendar_pd['weekday'].apply(lambda x: calendar.day_name[x])
+        calendar_pd['month'] = calendar_pd.index.month
+        calendar_pd['year'] = calendar_pd.index.year
+        for col in ['weekday', 'month', 'year']:
+            sns.countplot(data=calendar_pd, x=col)
+            plt.title(f'Countplot of {col} for {column}')
+            plt.xticks(rotation=45)
+            plt.show()
 
 
+
+    def plot_acf_pacf(self, column):
+        """
+        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
+
+        Parameters:
+        column (str): The name of the column to plot
+        """
+        plt.figure(figsize=(15, 5))
+        plot_acf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
+
+        plt.figure(figsize=(15, 5))
+        plot_pacf(self.df[column], lags=30, alpha=0.05)
+        plt.title(
+            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
+        plt.xlabel("Lag")
+        
 
 
 class DataExplorer:
@@ -119,21 +159,5 @@ class DataExplorer:
         plt.title("Correlation Heatmap")
         plt.show()
         
-    def plot_acf_pacf(self, column):
-        """
-        Plots the autocorrelation and partial autocorrelation of the given column from the given DataFrame
 
-        Parameters:
-        column (str): The name of the column to plot
-        """
-        plt.figure(figsize=(15, 5))
-        plot_acf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
-
-        plt.figure(figsize=(15, 5))
-        plot_pacf(self.df[column], lags=30, alpha=0.05)
-        plt.title(
-            f"Autocorrelation and Partial Autocorrelation of {column} by Lag")
-        plt.xlabel("Lag")
+    
