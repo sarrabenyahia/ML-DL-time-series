@@ -112,11 +112,20 @@ class DataPlotter:
         Plots the time series of the given column for the specified granularity.
         """
         granularity_list = self._get_granularity_list(granularity)
-
-        for df in granularity_list:
+        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
+        for index, df in enumerate(granularity_list):
             plt.figure(figsize=(15, 5))
             ax = sns.lineplot(data=df[column])
-            ax.set(ylabel=column)
+            if granularity == "all":
+                ax.set(title=f'{granularity_text[index]} values', ylabel="Watts/hour")
+            elif granularity == "D":
+                ax.set(title=f'Daily values', ylabel="Watts/hour")
+            elif granularity == "W":
+                ax.set(title=f'Weekly values', ylabel="Watts/hour")
+            elif granularity == "M":
+                ax.set(title=f'Monthly values', ylabel="Watts/hour")
+            elif granularity == "3M":
+                ax.set(title=f'Quarterly values', ylabel="Watts/hour")
 
     def plot_prob(self, column, granularity='all'):
         """
@@ -131,8 +140,8 @@ class DataPlotter:
         """
         Plots the histogram of the given column for the specified granularity.
         """
+        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
         granularity_list = self._get_granularity_list(granularity)
-        print(granularity_list)
         for index, df in enumerate(granularity_list):
             plt.figure(figsize=(15, 5))
             ax = sns.histplot(data=df[column], bins=50,
@@ -142,7 +151,16 @@ class DataPlotter:
             x = np.linspace(xmin, xmax, 100)
             p = stats.norm.pdf(x, mu, sigma)
             sns.lineplot(x=x, y=p, color='black')
-            ax.set(title=f'{} distribution of {column}', xlabel=column, ylabel='Density')
+            if granularity == "all":
+                ax.set(title=f'{granularity_text[index]} distribution of {column}', xlabel=column, ylabel='Density')
+            elif granularity == "D":
+                ax.set(title=f'Daily distribution of {column}', xlabel=column, ylabel='Density')
+            elif granularity == "W":
+                ax.set(title=f'Weekly distribution of {column}', xlabel=column, ylabel='Density')
+            elif granularity == "M":
+                ax.set(title=f'Monthly distribution of {column}', xlabel=column, ylabel='Density')
+            elif granularity == "3M":
+                ax.set(title=f'Quarterly distribution of {column}', xlabel=column, ylabel='Density')
 
 
 class PatternAnalyzer:
