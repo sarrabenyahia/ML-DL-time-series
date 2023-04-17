@@ -7,8 +7,13 @@ from datetime import datetime
 
 class DataProcessor:
     """
-    faire docstring
-    
+    Classe DataProcessor pour le prétraitement des données.
+    Cette classe permet de traiter et de préparer des données de séries temporelles pour l'analyse.
+    Les fonctionnalités incluent la combinaison des colonnes de date et d'heure, la conversion des types de données,
+    l'extraction des composants de la date, la réduction de la mémoire et la création de nouvelles variables.
+
+    Attributs:
+        df (pd.DataFrame): Le DataFrame à traiter.
     
     """
     def __init__(self, df):
@@ -38,7 +43,8 @@ class DataProcessor:
 
     def __convert_numeric(self, cols):
         # Convertir les colonnes souhaitées en valeurs numériques, avec les valeurs non convertibles définies sur NaN.
-        self.df = self.df.dropna()
+        # on justifiera plus tard le dropna dans le 4. cleaning
+        # self.df = self.df.dropna()
         self.df[cols] = self.df[cols].apply(pd.to_numeric, errors='coerce')
 
     def __convert_date(self):
@@ -60,7 +66,7 @@ class DataProcessor:
 
     def __downcast(self):
         """
-        Downcast in order to save memory
+        Downcast pour économiser de la mémoire
         """
         cols = self.df.dtypes.index.tolist()
         types = self.df.dtypes.values.tolist()
