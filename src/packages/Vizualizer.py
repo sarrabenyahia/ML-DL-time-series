@@ -215,20 +215,22 @@ class PatternAnalyzer:
 
 
     def seasonal_decompositation_additive(self, column, granularity="all"):
-
+        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
         granularity_list = self._get_granularity_list(granularity)
 
-        for df in granularity_list:
+        for index, df in enumerate(granularity_list):
+            print(f"{granularity_text[index]} Decomposition of {column}")
             result = seasonal_decompose(
                 df[column], model='additive', period=1)
             result.plot()
             plt.show()
             
     def seasonal_decompositation_multiplicative(self, column, granularity="all"):
-
+        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
         granularity_list = self._get_granularity_list(granularity)
 
         for df in granularity_list:
+            print(f"{granularity_text[index]} Decomposition of {column}")
             result = seasonal_decompose(
                 df[column], model='multiplicative', period=1)
             result.plot()
