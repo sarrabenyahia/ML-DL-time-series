@@ -9,34 +9,12 @@ import ruptures as rpt
 import seaborn as sns
 
 
-class VizualizationTS:
+class StationnaryViz:
 
     def __init__(self, df:pd.DataFrame, target:str):
         self.df = df
         self.target = target
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
-
-    def visualize_time_series(self, cols):
-        """
-        Create subplots for each time series.
-
-        Args:
-            self : DataFrame containing the time series.
-            cols: List of column names to plot.
-
-        Returns : 
-            Plots representing the evolution of each time series.
-        """
-        df_to_plot = self.df[cols]
-        default_colors = sns.color_palette('bright', len(cols))
-        fig, axs = plt.subplots(df_to_plot.shape[1], sharex=True, figsize=(10, 10))
-        for i, col in enumerate(df_to_plot.columns):
-            sns.lineplot(x=self.df.index, y=df_to_plot[col], ax=axs[i], color=default_colors[i])
-            axs[i].set_ylabel(col)
-        plt.xlabel('Time')
-        plt.show()
-
-
 
     def plot_acf_pacf(self, cols):
         """
@@ -70,7 +48,7 @@ class VizualizationTS:
             A plot of the default rate evolution.
         """
         fig = px.line(self.df, x=self.df.index, y=self.target)
-        fig.update_layout(title_text='Quarterly Default Rate 2010 - 2019')
+        fig.update_layout(title_text='Target time serie')
         fig.show()
 
     def plot_autocorrelation_target(self):
@@ -98,7 +76,7 @@ class VizualizationTS:
         Returns : 
             PACF de la target
                         """
-        fig = tsaplots.plot_pacf(self.df[self.target], lags=10)
+        fig = tsaplots.plot_pacf(self.df[self.target], lags=20)
 
         plt.xlabel("Lag at k")
         plt.ylabel("Correlation coefficient")

@@ -55,14 +55,14 @@ class FeatureEngineer:
             self.df[f'Global_active_power_std_{window}'] = self.df['Global_active_power'].rolling(
                 window).std()
 
-    def create_time_based_features(self):
+    def day_and_night(self):
         self.df['hour'] = self.df.index.hour
         self.df['is_daytime'] = np.where(
             self.df['hour'].isin(range(7, 20)), 1, 0)
         
-    def winter_summer_features(self):
-        self.df['winter'] = np.where((self.df.index.month == 12) | (self.df.index.month == 1) | (self.df.index.month == 2), 1, 0)
-        self.df['summer'] = np.where((self.df.index.month == 6) | (self.df.index.month == 7) | (self.df.index.month == 8), 1, 0)
+    def winter_is_coming(self):
+        self.df['is_winter'] = np.where((self.df.index.month == 12) | (self.df.index.month == 1) | (self.df.index.month == 2), 1, 0)
+        self.df['is_summer'] = np.where((self.df.index.month == 6) | (self.df.index.month == 7) | (self.df.index.month == 8), 1, 0)
 
     def create_fourier_transform_features(self, num_features=5):
         fft_vals = fft(self.df['Global_active_power'])
