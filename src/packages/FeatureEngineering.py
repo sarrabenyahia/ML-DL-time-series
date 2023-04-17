@@ -3,14 +3,27 @@ import pandas as pd
 import numpy as np
 from scipy.fft import fft
 from datetime import datetime
+import holidays
 
 
 class FeatureEngineer:
 
-    def __init__(self, df):
+    def __init__(self, df, target):
         self.df = df
+        self.target = target
 
-    def lag_creation(self, lag, time="day"):
+    def create_variables(self, lag, time, window_size):
+        self._lag_creation(lag, time)
+        self._window_rolling(window_size, time)
+        self._day_and_night()
+        self._finally_the_weekend()
+        self._sinus_hour()
+        self._is_ferie()
+        self._winter_is_coming()
+        self._drop_not_lagged()
+        return self.df
+
+    def _lag_creation(self, lag, time="day"):
         if isinstance(lag, int):
             lag = [lag]
         if time == "day":
@@ -29,10 +42,10 @@ class FeatureEngineer:
                 new_col = self.df[col].shift(l)
                 new_col.name = f"{col}_lag{lag[index]}{time[0]}"
                 new_cols.append(new_col)
+        self.df = pd.concat([self.df] + new_cols, axis=1)
+ 
 
-        return pd.concat([self.df] + new_cols, axis=1)
-
-    def window_rolling(self, window_size, time="day"):
+    def _window_rolling(self, window_size, time="day"):
         if isinstance(window_size, int):
             window_size = [window_size]
             if time == "day":
@@ -46,31 +59,46 @@ class FeatureEngineer:
                     "Invalid time value. Please use 'day', 'hour' or 'minute.'")
 
         for window in window_min:
-            self.df[f'Global_active_power_mean_{window}'] = self.df['Global_active_power'].rolling(
+            self.df[f'{self.target}_mean_{window}'] = self.df[self.target].rolling(
                 window).mean()
-            self.df[f'Global_active_power_min_{window}'] = self.df['Global_active_power'].rolling(
+            self.df[f'{self.target}_min_{window}'] = self.df[self.target].rolling(
                 window).min()
-            self.df[f'Global_active_power_max_{window}'] = self.df['Global_active_power'].rolling(
+            self.df[f'{self.target}_max_{window}'] = self.df[self.target].rolling(
                 window).max()
-            self.df[f'Global_active_power_std_{window}'] = self.df['Global_active_power'].rolling(
+            self.df[f'{self.target}_std_{window}'] = self.df[self.target].rolling(
                 window).std()
 
-    def day_and_night(self):
+    def _day_and_night(self):
         self.df['hour'] = self.df.index.hour
         self.df['is_daytime'] = np.where(
             self.df['hour'].isin(range(7, 20)), 1, 0)
+        self.df.drop(columns='hour', inplace=True)
+
+    def _sinus_hour(self):
+        self.df['hour'] = self.df.index.hour
+        self.df['hour_sin'] = np.sin(2 * np.pi * self.df['hour'] / 24)
+        self.df.drop(columns='hour', inplace=True)
         
-    def winter_is_coming(self):
-        self.df['is_winter'] = np.where((self.df.index.month == 12) | (self.df.index.month == 1) | (self.df.index.month == 2), 1, 0)
-        self.df['is_summer'] = np.where((self.df.index.month == 6) | (self.df.index.month == 7) | (self.df.index.month == 8), 1, 0)
+    def _finally_the_weekend(self):
+        self.df['is_weekend'] = self.df.index.dayofweek.isin([
+            5, 6]).astype(int)
 
-    def create_fourier_transform_features(self, num_features=5):
-        fft_vals = fft(self.df['Global_active_power'])
-        abs_fft_vals = np.abs(fft_vals)
-        num_samples = len(self.df)
-        freqs = np.arange(num_samples) / num_samples
-        top_freqs = freqs[np.argsort(-abs_fft_vals)[:num_features]]
+    def _is_ferie(self):
+        # Create a new column for whether the date is a public holiday in France
+        fr_holidays = holidays.France()
+        idx = pd.DatetimeIndex(self.df.index.date)
+        self.df['is_ferie'] = idx.isin(fr_holidays).astype(int)
 
-        for i, freq in enumerate(top_freqs, 1):
-            self.df[f'Global_active_power_freq_{i}'] = abs_fft_vals[int(
-                freq*num_samples)]
+    def _winter_is_coming(self):
+        self.df['is_winter'] = np.where((self.df.index.month == 12) | (
+            self.df.index.month == 1) | (self.df.index.month == 2), 1, 0)
+        self.df['is_summer'] = np.where((self.df.index.month == 6) | (
+            self.df.index.month == 7) | (self.df.index.month == 8), 1, 0)
+
+    def _drop_not_lagged(self):
+        self.df.drop(columns=["Global_active_power","Global_reactive_power","Voltage",
+                      "Global_intensity", "Sub_metering_1", "Sub_metering_2",
+                      "Sub_metering_3" , "other_submetering"], inplace=True)
+        
+        
+    

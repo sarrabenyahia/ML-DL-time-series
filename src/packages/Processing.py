@@ -53,7 +53,6 @@ class DataProcessor:
 
     def __convert_time(self):
         # apply the datetime.strptime() method to each element in the column
-
         self.df['Time'] = self.df['Time'].apply(
             lambda x: datetime.strptime(x, "%H:%M:%S").strftime("%H:%M:%S"))
 
