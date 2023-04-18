@@ -12,6 +12,9 @@
 ## Introduction
 Georges Hebrail et Alice Berard, employés d'EDF travaillant dans le pôle R&D, ont mis à disposition des données de consommation électrique des ménages de Sceaux, une ville située à 7 km de Paris. Ces données couvrent la période du 16 décembre 2006 au 26 novembre 2010. Bien que ces données n'aient pas été associées à une problématique particulière et qu'aucun papier de recherche n'ait été publié sur ce sujet, nous les considérons comme une excellente base de départ pour notre projet de Deep Learning sur des séries temporelles.
 
+Vous retrouverez les données [ici](https://archive.ics.uci.edu/ml/datasets/individual+household+electric+power+consumption#).
+Il faudra créer un fichier data où vous stockez la donnée dans celui-ci.
+
 ## Objectif
 L'objectif de ce projet est d'optimiser la production d'électricité d'EDF en évitant la surproduction, ce qui permet de réduire les coûts et l'impact environnemental. En prévoyant les pics de consommation, il est également possible d'informer les ménages afin qu'ils puissent adapter leur consommation et réduire leur impact.
 
