@@ -70,28 +70,31 @@ class DataPlotter:
         Initializes the class with the given DataFrame and resamples it.
         """
         self.df = df
+        self.granularity_text = ['Hourly', 'Daily', 'Weekly', 'Monthly', 'Quarterly']
         self._resample()
 
     def _resample(self):
         """
         Resamples the DataFrame into daily, weekly, monthly, and quarterly groups.
         """
+        hourly_df = self.df.resample('H').sum()
         daily_df = self.df.resample('D').sum()
         weekly_df = self.df.resample('W').sum()
         monthly_df = self.df.resample('M').sum()
         quarter_df = self.df.resample('3M').sum()
 
-        self.resampled_dfs = [daily_df, weekly_df, monthly_df, quarter_df]
+        self.resampled_dfs = [hourly_df, daily_df, weekly_df, monthly_df, quarter_df]
 
     def _get_granularity_list(self, granularity):
         """
         Returns the list of DataFrames based on the granularity input.
         """
         granularities = {'all': self.resampled_dfs,
-                         'D': [self.resampled_dfs[0]],
-                         'W': [self.resampled_dfs[1]],
-                         'M': [self.resampled_dfs[2]],
-                         '3M': [self.resampled_dfs[3]]}
+                         'H': [self.resampled_dfs[0]],
+                         'D': [self.resampled_dfs[1]],
+                         'W': [self.resampled_dfs[2]],
+                         'M': [self.resampled_dfs[3]],
+                         '3M': [self.resampled_dfs[4]]}
         return granularities[granularity]
 
     def data_profiling(self, granularity='all'):
@@ -109,12 +112,14 @@ class DataPlotter:
         Plots the time series of the given column for the specified granularity.
         """
         granularity_list = self._get_granularity_list(granularity)
-        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
+
         for index, df in enumerate(granularity_list):
             plt.figure(figsize=(15, 5))
             ax = sns.lineplot(data=df[column])
             if granularity == "all":
-                ax.set(title=f'{granularity_text[index]} values', ylabel="Watts/hour")
+                ax.set(title=f'{self.granularity_text[index]} values', ylabel="Watts/hour")
+            elif granularity == "H":
+                ax.set(title=f'Hourly values', ylabel="Watts/hour")
             elif granularity == "D":
                 ax.set(title=f'Daily values', ylabel="Watts/hour")
             elif granularity == "W":
@@ -130,14 +135,14 @@ class DataPlotter:
         """
         granularity_list = self._get_granularity_list(granularity)
 
-        for df in granularity_list:
+        for index, df in enumerate(granularity_list):
             ProbPlot(data=df[column]).qqplot(line='s')
+            plt.title(f'{self.granularity_text[index]} values')
 
     def plot_histogram(self, column, granularity='all'):
         """
         Plots the histogram of the given column for the specified granularity.
         """
-        granularity_text = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
         granularity_list = self._get_granularity_list(granularity)
         for index, df in enumerate(granularity_list):
             plt.figure(figsize=(15, 5))
@@ -149,7 +154,7 @@ class DataPlotter:
             p = stats.norm.pdf(x, mu, sigma)
             sns.lineplot(x=x, y=p, color='black')
             if granularity == "all":
-                ax.set(title=f'{granularity_text[index]} distribution of {column}', xlabel=column, ylabel='Density')
+                ax.set(title=f'{self.granularity_text[index]} distribution of {column}', xlabel=column, ylabel='Density')
             elif granularity == "D":
                 ax.set(title=f'Daily distribution of {column}', xlabel=column, ylabel='Density')
             elif granularity == "W":
