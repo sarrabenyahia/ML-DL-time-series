@@ -1,5 +1,15 @@
 # Projet de ML/DL sur des séries temporelles de consommation électrique
 
+
+## Sommaire
+
+0. [Introduction](#introduction)
+1. [Objectif](#objectif)
+2. [Jeu de données](#jeu-de-données)
+3. [Problématiques envisagées](#problématiques-envisagées)
+4. [Conclusion](#conclusion)
+
+## Introduction
 Georges Hebrail et Alice Berard, employés d'EDF travaillant dans le pôle R&D, ont mis à disposition des données de consommation électrique des ménages de Sceaux, une ville située à 7 km de Paris. Ces données couvrent la période du 16 décembre 2006 au 26 novembre 2010. Bien que ces données n'aient pas été associées à une problématique particulière et qu'aucun papier de recherche n'ait été publié sur ce sujet, nous les considérons comme une excellente base de départ pour notre projet de Deep Learning sur des séries temporelles.
 
 ## Objectif
@@ -36,3 +46,18 @@ Dans tous les cas, l'objectif est d'optimiser la production d'électricité d'ED
 Après avoir effectué certaines recherches, nous avons appris que la puissance réactive est une puissance électromagnétique latente dans le réseau électrique, produite par des appareils tels que des bobines ou des moteurs. Cette énergie n'est pas facturée par EDF et suppose un coût, cependant elle est essentielle pour faire fonctionner ces types d'appareils. Cette puissance est stable dans le temps par construction et donc ne serait pas très intéressante à prendre comme cible.
 
 Nous avons donc décidé de prédire la puissance consommée active.
+
+## Conclusion
+
+Nous avons finalement choisi de comparer deux types de modèles :
+
+- XGBoost, un algorithme d'apprentissage automatique ensembliste basé sur des arbres de décision boostés, qui a prouvé son efficacité dans de nombreuses tâches de prédiction ;
+- ConvLSTM, un modèle hybride qui combine les avantages des réseaux de neurones convolutifs (CNN) et des LSTM (Long Short-Term Memory), adapté pour les données séquentielles, comme les séries temporelles.
+
+Le modèle XGBoost est un modèle basé sur des arbres de décision, ce qui lui permet de capturer des relations non linéaires et de gérer efficacement les données manquantes. Il utilise un ensemble de modèles faibles pour créer un modèle fort et peut être utilisé pour la classification et la régression. Dans notre cas, nous l'utilisons pour la régression afin de prédire la puissance consommée active.
+
+Le modèle ConvLSTM, quant à lui, est un réseau de neurones hybride qui combine les avantages des CNN et des LSTM. Les CNN sont particulièrement efficaces pour extraire des caractéristiques à partir de données séquentielles, tandis que les LSTM peuvent modéliser les dépendances à long terme dans les données séquentielles. Le modèle ConvLSTM peut donc être particulièrement adapté pour la prédiction de séries temporelles.
+
+Nous allons comparer les performances de ces deux modèles pour la prédiction de la puissance consommée active.
+
+
