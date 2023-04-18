@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 import numpy as np
-from scipy.fft import fft
-from datetime import datetime
 import holidays
 
 
@@ -21,6 +19,7 @@ class FeatureEngineer:
         self._is_ferie()
         self._winter_is_coming()
         self._drop_not_lagged()
+        self.df = self.df.dropna()
         return self.df
 
     def _lag_creation(self, lag, time="day"):

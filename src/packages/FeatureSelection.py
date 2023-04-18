@@ -47,3 +47,4 @@ def filter_correlated_variables(df, target, corr_measure="pearson", min_corr=0, 
 
     # Return filtered variables
     return selected_vars
+
