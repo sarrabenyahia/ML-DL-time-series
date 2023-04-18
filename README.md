@@ -51,13 +51,11 @@ Nous avons donc décidé de prédire la puissance consommée active.
 
 Nous avons finalement choisi de comparer deux types de modèles :
 
-- XGBoost, un algorithme d'apprentissage automatique ensembliste basé sur des arbres de décision boostés, qui a prouvé son efficacité dans de nombreuses tâches de prédiction ;
-- ConvLSTM, un modèle hybride qui combine les avantages des réseaux de neurones convolutifs (CNN) et des LSTM (Long Short-Term Memory), adapté pour les données séquentielles, comme les séries temporelles.
-
-Le modèle XGBoost est un modèle basé sur des arbres de décision, ce qui lui permet de capturer des relations non linéaires et de gérer efficacement les données manquantes. Il utilise un ensemble de modèles faibles pour créer un modèle fort et peut être utilisé pour la classification et la régression. Dans notre cas, nous l'utilisons pour la régression afin de prédire la puissance consommée active.
+LightGBM (LGBM), un algorithme d'apprentissage automatique ensembliste basé sur des arbres de décision boostés, qui a prouvé son efficacité dans de nombreuses tâches de prédiction ;
+ConvLSTM, un modèle hybride qui combine les avantages des réseaux de neurones convolutifs (CNN) et des LSTM (Long Short-Term Memory), adapté pour les données séquentielles, comme les séries temporelles.
+Le modèle LGBM est un modèle basé sur des arbres de décision, ce qui lui permet de capturer des relations non linéaires et de gérer efficacement les données manquantes. Il utilise un ensemble de modèles faibles pour créer un modèle fort et peut être utilisé pour la classification et la régression. Dans notre cas, nous l'utilisons pour la régression afin de prédire la puissance consommée active.
 
 Le modèle ConvLSTM, quant à lui, est un réseau de neurones hybride qui combine les avantages des CNN et des LSTM. Les CNN sont particulièrement efficaces pour extraire des caractéristiques à partir de données séquentielles, tandis que les LSTM peuvent modéliser les dépendances à long terme dans les données séquentielles. Le modèle ConvLSTM peut donc être particulièrement adapté pour la prédiction de séries temporelles.
 
 Nous allons comparer les performances de ces deux modèles pour la prédiction de la puissance consommée active.
-
 
