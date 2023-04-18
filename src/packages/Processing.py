@@ -24,7 +24,7 @@ class DataProcessor:
         self.__convert_numeric(numeric_cols)
         self.__convert_date()
         self.__convert_time()
-        self.__extract_date_components()
+        # self.__extract_date_components()
         self.__downcast()
         # ramener la cible à la bonne unité, nécéssaire avant la réalisation de l'EDA et les analyses descriptives
         self.df['Global_active_power_Wh'] = self.df['Global_active_power']*1000/60

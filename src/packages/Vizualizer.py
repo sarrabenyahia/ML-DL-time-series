@@ -19,7 +19,7 @@ class GeneralPresentator:
         self.print_data_types()
         self.print_basic_stats()
         self.print_missing_values()
-        self.print_categorical_uniques()
+        # self.print_categorical_uniques()
         self.print_sample_data()
 
     def print_column_names(self):
