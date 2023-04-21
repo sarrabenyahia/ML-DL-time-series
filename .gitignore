@@ -133,3 +133,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .deep_learningTS/
+model/prophet/prophet_model.pkl
+model/prophet/prophet_model_daily.pkl
