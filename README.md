@@ -1,5 +1,7 @@
 # Projet de ML/DL sur des séries temporelles de consommation électrique
 
+## Requirements
+Utiliser Python3.10 pour un correct fonctionnement
 
 ## Sommaire
 
